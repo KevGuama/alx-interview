@@ -2,38 +2,52 @@
 
 const request = require('request');
 
-// Get the movie ID from the command line arguments
 const movieId = process.argv[2];
+const filmEndPoint = 'https://swapi-api.hbtn.io/api/films/' + movieId;
+let people = [];
+const names = [];
 
-// Define the URL for the Star Wars API for the movie ID
-const apiUrl = `https://swapi-api.hbtn.io/api/films/${movieId}`;
+const requestCharacters = async () => {
+  await new Promise(resolve => request(filmEndPoint, (err, res, body) => {
+    if (err || res.statusCode !== 200) {
+      console.error('Error: ', err, '| StatusCode: ', res.statusCode);
+    } else {
+      const jsonBody = JSON.parse(body);
+      people = jsonBody.characters;
+      resolve();
+    }
+  }));
+};
 
-// Make a request to the Star Wars API to get the movie details
-request(apiUrl, (error, response, body) => {
-  if (error) {
-    console.error('Error fetching movie data:', error);
-    return;
+const requestNames = async () => {
+  if (people.length > 0) {
+    for (const p of people) {
+      await new Promise(resolve => request(p, (err, res, body) => {
+        if (err || res.statusCode !== 200) {
+          console.error('Error: ', err, '| StatusCode: ', res.statusCode);
+        } else {
+          const jsonBody = JSON.parse(body);
+          names.push(jsonBody.name);
+          resolve();
+        }
+      }));
+    }
+  } else {
+    console.error('Error: Got no Characters for some reason');
   }
+};
 
-  // Parse the response body as JSON
-  const movieData = JSON.parse(body);
+const getCharNames = async () => {
+  await requestCharacters();
+  await requestNames();
 
-  // Get the list of character URLs from the movie data
-  const characterUrls = movieData.characters;
+  for (const n of names) {
+    if (n === names[names.length - 1]) {
+      process.stdout.write(n);
+    } else {
+      process.stdout.write(n + '\n');
+    }
+  }
+};
 
-  // For each character URL, make a request to get the character's name
-  characterUrls.forEach((characterUrl) => {
-    request(characterUrl, (error, response, body) => {
-      if (error) {
-        console.error('Error fetching character data:', error);
-        return;
-      }
-
-      // Parse the character data
-      const characterData = JSON.parse(body);
-
-      // Print the character's name
-      console.log(characterData.name);
-    });
-  });
-});
+getCharNames();
