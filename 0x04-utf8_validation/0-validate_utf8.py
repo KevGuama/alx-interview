@@ -32,3 +32,4 @@ def validUTF8(data):
 
     return count == 0
 
+
