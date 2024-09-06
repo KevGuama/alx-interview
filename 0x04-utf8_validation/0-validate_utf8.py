@@ -3,6 +3,7 @@
 validUTF8
 """
 
+
 def validUTF8(data):
     """Determines if a given data set represents a valid UTF-8 encoding"""
     count = 0
@@ -31,5 +32,3 @@ def validUTF8(data):
                 return False
 
     return count == 0
-
-
