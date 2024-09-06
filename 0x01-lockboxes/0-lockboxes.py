@@ -1,32 +1,37 @@
 #!/usr/bin/python3
-'''LockBoxes Challenge'''
+'''a script that reads stdin line by line and computes metrics'''
 
 
-def canUnlockAll(boxes):
-    '''determines if all the boxes can be opened or not
-    Returns:
-        True: all boxes can be opened
-        False: not all boxes can be opened
-    '''
-    length = len(boxes)
-    keys = set()
-    opened_boxes = []
-    i = 0
+import sys
 
-    while i < length:
-        oldi = i
-        opened_boxes.append(i)
-        keys.update(boxes[i])
-        for key in keys:
-            if key != 0 and key < length and key not in opened_boxes:
-                i = key
-                break
-        if oldi != i:
-            continue
-        else:
-            break
+cache = {'200': 0, '301': 0, '400': 0, '401': 0,
+         '403': 0, '404': 0, '405': 0, '500': 0}
+total_size = 0
+counter = 0
 
-    for i in range(length):
-        if i not in opened_boxes and i != 0:
-            return False
-    return True
+try:
+    for line in sys.stdin:
+        line_list = line.split(" ")
+        if len(line_list) > 4:
+            code = line_list[-2]
+            size = int(line_list[-1])
+            if code in cache.keys():
+                cache[code] += 1
+            total_size += size
+            counter += 1
+
+        if counter == 10:
+            counter = 0
+            print('File size: {}'.format(total_size))
+            for key, value in sorted(cache.items()):
+                if value != 0:
+                    print('{}: {}'.format(key, value))
+
+except Exception as err:
+    pass
+
+finally:
+    print('File size: {}'.format(total_size))
+    for key, value in sorted(cache.items()):
+        if value != 0:
+            print('{}: {}'.format(key, value))
