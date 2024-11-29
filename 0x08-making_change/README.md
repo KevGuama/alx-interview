@@ -10,3 +10,4 @@ coins is a list of the values of the coins in your possession
 - The value of a coin will always be an integer greater than 0
 - You can assume you have an infinite number of each denomination of coin in the list
 - Your solution’s runtime will be evaluated in this task
+- By Kev_Guama aka G.dev
